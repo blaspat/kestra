@@ -4,6 +4,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import io.kestra.core.exceptions.InternalException;
 import io.kestra.core.models.executions.Execution;
 import io.kestra.core.models.executions.TaskRun;
 import io.kestra.core.models.flows.State;
@@ -83,5 +84,12 @@ public class LoopUntilCaseTest {
 
         assertThat(execution.getState().getCurrent()).isEqualTo(State.Type.FAILED);
         assertThat((Integer) taskOutputService.getOutputs(execution.getTaskRunList().getFirst()).get("iterationCount")).isGreaterThan(1);
+    }
+
+    public void loopUntilFailedFlowable(String tenantId) throws QueueException, TimeoutException, InternalException {
+        Execution execution = runnerUtils.runOne(tenantId, "io.kestra.tests", "loopuntil-failed-flowable");
+
+        assertThat(execution.getState().getCurrent()).isEqualTo(State.Type.FAILED);
+        assertThat((Integer) taskOutputService.getOutputs(execution.getTaskRunList().getFirst()).get("iterationCount")).isEqualTo(1);
     }
 }
